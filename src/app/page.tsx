@@ -2,6 +2,7 @@ import Image from "next/image";
 import HodogramTimeline from "./components/HodogramTimeline";
 import { Great_Vibes } from "next/font/google";
 import InvitationNote from "./components/InvitationNote";
+import RSVPForm from "./components/RSVPForm";
 
 const greatVibes = Great_Vibes({ weight: "400", subsets: ["latin"] });
 
@@ -42,6 +43,11 @@ export default function Home() {
       {/* Hodogram */}
       <section>
         <HodogramTimeline />
+      </section>
+
+       {/* RSVPForm */}
+      <section>
+        <RSVPForm />
       </section>
     </main>
   );

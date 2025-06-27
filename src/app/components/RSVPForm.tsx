@@ -6,6 +6,7 @@ export default function RSVPForm() {
   const [kids, setKids] = useState(0);
   const [toddlers, setToddlers] = useState(0);
   const [names, setNames] = useState([""]);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleCountChange = (count: number) => {
     const newNames = [...names];
@@ -20,6 +21,31 @@ export default function RSVPForm() {
     setNames(updated);
   };
 
+  const handleSubmit = async () => {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbzjIlKAF0bQpdDgLOC4ZgW3qiDxx8GxpVaTVCxxvnQojGldjRTunPoO3vLPjIN1KYtKfg/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ adults, kids, toddlers, names }),
+});
+
+
+    if (response.ok) {
+      setSubmitted(true);
+    } else {
+      alert("Greška pri slanju. Pokušajte ponovno.");
+    }
+  };
+
+  if (submitted) {
+    return (
+      <section className="relative py-20 px-4 bg-[#fdf6f0]">
+        <div className="max-w-xl mx-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-10 text-center border border-[#e5d5c0]">
+          <h2 className="text-3xl font-serif text-[#6b4c3b] mb-4">Hvala vam! 🎉</h2>
+          <p className="text-lg text-gray-700">Vaša potvrda dolaska je zaprimljena. Veselimo se druženju! ❤️</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative py-20 px-4 bg-[#fdf6f0]">
@@ -29,47 +55,45 @@ export default function RSVPForm() {
         {/* Brojači */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 text-center">
           {[
-  { label: "Odrasli (od 15 god.)", value: adults, setValue: setAdults },
-  { label: "Djeca 5–14 god.", value: kids, setValue: setKids },
-  { label: "Djeca do 5 god.", value: toddlers, setValue: setToddlers },
-].map(({ label, value, setValue }) => (
-  <div key={label}>
-    <p className="text-sm text-gray-700">{label}</p>
-    <div className="flex justify-center items-center gap-2 mt-1">
-      <button
-        onClick={() => {
-          const newVal = Math.max(0, value - 1);
-          setValue(newVal);
-
-          // Izračunaj novi ukupni broj gostiju odmah ovdje:
-          const newTotal = (label === "Odrasli (od 15 god.)" ? newVal : adults) +
-                           (label === "Djeca 5–14 god." ? newVal : kids) +
-                           (label === "Djeca do 5 god." ? newVal : toddlers);
-          handleCountChange(newTotal);
-        }}
-        className="w-8 h-8 bg-[#e5d5c0] rounded-full text-white text-xl font-semibold"
-      >
-        −
-      </button>
-      <span className="text-lg font-semibold">{value}</span>
-      <button
-        onClick={() => {
-          const newVal = value + 1;
-          setValue(newVal);
-
-          const newTotal = (label === "Odrasli (od 15 god.)" ? newVal : adults) +
-                           (label === "Djeca 5–14 god." ? newVal : kids) +
-                           (label === "Djeca do 5 god." ? newVal : toddlers);
-          handleCountChange(newTotal);
-        }}
-        className="w-8 h-8 bg-[#e5d5c0] rounded-full text-white text-xl font-semibold"
-      >
-        +
-      </button>
-    </div>
-  </div>
-))}
-
+            { label: "Odrasli (od 15 god.)", value: adults, setValue: setAdults },
+            { label: "Djeca 5–14 god.", value: kids, setValue: setKids },
+            { label: "Djeca do 5 god.", value: toddlers, setValue: setToddlers },
+          ].map(({ label, value, setValue }) => (
+            <div key={label}>
+              <p className="text-sm text-gray-700">{label}</p>
+              <div className="flex justify-center items-center gap-2 mt-1">
+                <button
+                  onClick={() => {
+                    const newVal = Math.max(0, value - 1);
+                    setValue(newVal);
+                    const newTotal =
+                      (label === "Odrasli (od 15 god.)" ? newVal : adults) +
+                      (label === "Djeca 5–14 god." ? newVal : kids) +
+                      (label === "Djeca do 5 god." ? newVal : toddlers);
+                    handleCountChange(newTotal);
+                  }}
+                  className="w-8 h-8 bg-[#e5d5c0] rounded-full text-white text-xl font-semibold"
+                >
+                  −
+                </button>
+                <span className="text-lg font-semibold">{value}</span>
+                <button
+                  onClick={() => {
+                    const newVal = value + 1;
+                    setValue(newVal);
+                    const newTotal =
+                      (label === "Odrasli (od 15 god.)" ? newVal : adults) +
+                      (label === "Djeca 5–14 god." ? newVal : kids) +
+                      (label === "Djeca do 5 god." ? newVal : toddlers);
+                    handleCountChange(newTotal);
+                  }}
+                  className="w-8 h-8 bg-[#e5d5c0] rounded-full text-white text-xl font-semibold"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Unos imena */}
@@ -89,7 +113,10 @@ export default function RSVPForm() {
 
         {/* Gumb za potvrdu */}
         <div className="text-center">
-          <button className="px-6 py-3 bg-[#e5d5c0] text-white rounded-xl text-lg hover:bg-[#d8c0a5] transition">
+          <button
+            onClick={handleSubmit}
+            className="px-6 py-3 bg-[#e5d5c0] text-white rounded-xl text-lg hover:bg-[#d8c0a5] transition"
+          >
             Potvrdi dolazak
           </button>
         </div>
